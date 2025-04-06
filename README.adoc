@@ -22,6 +22,18 @@ HenPay 使用 Spring Boot 和 Ant Design Vue 开发，集成 Spring Security 实
 * 使用 spring security 实现权限管理
 * 前后端分离架构，方便二次开发
 
+== 技术栈
+
+- java 17
+- SpringBoot 3
+- Redis
+- MySQL
+- MQ(ActiveMQ 或 RabbitMQ 或 RocketMQ)
+- Ant Design Vue
+- MyBaits-Plus
+- WxJava
+- Hutool
+
 == 系统架构
 
 image::doc/5aad133b6d07f2b0538c025f6277e87.png[]
