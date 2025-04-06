@@ -1,0 +1,32 @@
+apply plugin: "java-library"
+
+dependencies {
+    // 核心 Spring 依赖（compileOnly 对应 Maven 的 provided）
+    compileOnlyApi 'org.springframework:spring-context'
+    compileOnlyApi 'org.springframework.boot:spring-boot-starter-data-redis'
+    compileOnlyApi 'org.springframework:spring-webmvc'
+    compileOnlyApi 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+    // MyBatis Plus（强制版本管理）
+    api("com.baomidou:mybatis-plus-spring-boot3-starter:$mybatisPlusVersion") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter'
+    }
+
+    // JWT 工具
+    api 'io.jsonwebtoken:jjwt:0.12.3'
+
+    // Spring Security
+    api 'org.springframework.security:spring-security-core:6.2.0'
+
+    // 工具类库
+    api 'com.alibaba:fastjson:2.0.42'
+    api 'org.apache.commons:commons-lang3:3.13.0'
+    api 'javax.xml.bind:jaxb-api:2.3.1'
+
+    // API 文档工具
+    api 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.3.0'
+    api 'io.swagger.core.v3:swagger-models-jakarta:2.2.15'
+
+    // 测试依赖
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

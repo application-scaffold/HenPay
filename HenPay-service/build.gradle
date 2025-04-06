@@ -1,0 +1,18 @@
+apply plugin: "application"
+
+dependencies {
+    // 本地模块依赖（对应 jeepay-core）
+    implementation project(":HenPay-core")
+
+    // MySQL 驱动（根据网页12/13）
+    implementation 'com.mysql:mysql-connector-j'
+
+    // Druid 连接池（显式指定版本）
+    implementation 'com.alibaba:druid-spring-boot-starter:1.2.6'
+
+    // MyBatis Plus（Spring Boot 3 适配版）
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter'
+
+    // Spring Security（仅编译期有效）
+    compileOnly 'org.springframework.security:spring-security-core'
+}

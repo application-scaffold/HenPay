@@ -1,0 +1,1579 @@
+= 接口规则
+
+== 协议规则
+
+- 传输方式：采用 HTTP 传输(生产环境建议 HTTPS)
+- 提交方式：POST 或 GET
+- 内容类型：application/json
+- 字符编码：UTF-8
+- 签名算法：MD5
+
+== 参数规范
+
+- 交易金额：默认为人民币交易，单位为分，参数值不能带小数。
+- 时间参数：所有涉及时间参数均使用精确到毫秒的 13 位数值，如：1622016572190。时间戳具体是指从格林尼治时间 1970 年 01 月 01 日 00 时 00 分 00 秒起至现在的毫秒数。
+
+== 签名算法
+
+签名生成的通用步骤如下：
+
+*第一步*： 假设所有发送或者接收到的数据为集合 M，将集合 M 内 *非空参数值的参数* 按照参数名 ASCII 码从小到大排序（字典序），使用 URL 键值对的格式（即 key1=value1&key2=value2…）拼接成字符串 stringA。
+
+特别注意以下重要规则：
+
+* 参数名 ASCII 码从小到大排序（字典序）；
+* 如果参数的值为空不参与签名；
+* 参数名区分大小写；
+* 验证调用返回或支付中心主动通知签名时，传送的 sign 参数不参与签名，将生成的签名与该 sign 值作校验。
+* 支付中心接口可能增加字段，验证签名时必须支持增加的扩展字段
+
+*第二步*： 在 stringA 最后拼接上 key [即 StringA +"&key=" + 私钥 ] 得到 stringSignTemp 字符串，并对 stringSignTemp 进行 MD5 运算，再将得到的字符串所有字符转换为大写，得到 sign 值 signValue。
+
+如请求支付系统参数如下：
+
+[source, java]
+----
+Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("mchNo", "M1682391685");                   // 商户号
+        paramsMap.put("appId", "6447428682ca7458118af79f");      // 应用ID
+        paramsMap.put("mchOrderNo", "mho1694051705945");         // 商户订单号
+        paramsMap.put("wayCode", "ALI_BAR");                     // 支付方式
+        paramsMap.put("amount", 1L);                             // 金额，单位分
+        paramsMap.put("currency", "CNY");                        // 币种，目前只支持cny
+        paramsMap.put("clientIp", "192.166.1.132");              // 发起支付请求客户端的IP地址
+        paramsMap.put("subject", "商品标题");                     // 商品标题
+        paramsMap.put("body", "商品描述");                        // 商品描述
+        paramsMap.put("notifyUrl", "https://www.jeequan.com");   // 异步通知地址
+        paramsMap.put("reqTime", "1694051706");   			   // 请求时间
+        paramsMap.put("version", "1.0");   				 	 // 接口版本号，固定：1.0
+        paramsMap.put("signType", "MD5");   				 	// 签名类型
+        paramsMap.put("channelExtra", "{\"authCode\":\"284957415846666792\"}");  // 渠道参数
+----
+
+待签名值：
+
+[source, bash]
+----
+
+amount=1&appId=6447428682ca7458118af79f&body=商品描述&channelExtra={"authCode":"284957415846666792"}&clientIp=192.166.1.132&currency=CNY&mchNo=M1682391685&mchOrderNo=mho1694051705945&notifyUrl=https://www.jeequan.com&reqTime=1694051706&signType=MD5&subject=商品标题&version=1.0&wayCode=ALI_BAR&key=UNpEETkvMpqC9oDLBr9S2X7U92k462h3zhHiy7hj4xbw23PiWhMv6TCAQ2vh8PzynZXZYo9n6puxHkAHG7li6LZi8IpaQrshzydnBll64iKlb4U59ggiyCTaHJeqffiW
+----
+
+签名结果：924065BA077FA461A9B06D2E76E9ED3C
+
+最终请求支付系统参数：
+
+[source, json]
+----
+{"amount":1,"mchOrderNo":"mho1694051705945","subject":"商品标题","wayCode":"ALI_BAR","sign":"924065BA077FA461A9B06D2E76E9ED3C","reqTime":"1694051706","body":"商品描述","version":"1.0","channelExtra":{"authCode":"284957415846666792"},"appId":"6447428682ca7458118af79f","clientIp":"192.166.1.132","notifyUrl":"https://www.jeequan.com","signType":"MD5","currency":"CNY","mchNo":"M1682391685"}
+----
+
+运营管理平台可以管理商户的私钥
+
+[TIP]
+====
+签名以及接口调用，请使用 HenPay 官方提供的 sdk： https://gitee.com/jeequan/jeepay-sdk-java (TODO 需要修改)
+====
+
+== 返回码
+
+[cols="3,7"]
+|===
+|code|描述
+
+|0
+|成功
+
+|9999
+|异常，具体错误详见 msg 字段
+|===
+
+== 支付接口
+
+=== 统一支付下单
+
+商户业务系统通过统一下单接口发起支付收款订单，HenPay 支付网关会根据商户配置的支付通道路由支付通道完成支付下单。支付网关根据不同的支付方式返回对应的支付参数，业务系统使用支付参数发起收款。
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求URL： https://pay.jeepay.vip/api/pay/unifiedOrder
+- 请求方式：POST
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|商户生成的订单号
+
+|支付方式
+|wayCode
+|是
+|String(30)
+|WX_LITE
+|支付方式,如微信小程序WX_LITE
+
+|支付金额
+|amount
+|是
+|int
+|100
+|支付金额,单位分
+
+|货币代码
+|currency
+|是
+|String(3)
+|cny
+|三位货币代码,人民币:cny
+
+|客户端IP
+|clientIp
+|否
+|String(32)
+|210.73.10.148
+|客户端IPV4地址
+
+|商品标题
+|subject
+|是
+|String(64)
+|Jeepay商品标题测试
+|商品标题
+
+|商品描述
+|body
+|是
+|String(256)
+|Jeepay商品描述测试
+|商品描述
+
+|异步通知地址
+|notifyUrl
+|否
+|String(128)
+|https://www.jeequan.com/notify.htm
+|支付结果异步回调URL,只有传了该值才会发起回调
+
+|跳转通知地址
+|returnUrl
+|否
+|String(128)
+|https://www.jeequan.com/return.htm
+|支付结果同步跳转通知URL
+
+|失效时间
+|expiredTime
+|否
+|int
+|3600
+|订单失效时间,单位秒,默认2小时.
+订单在(创建时间+失效时间)后失效
+
+|渠道参数
+|channelExtra
+|否
+|String(256)
+|{"auth_code", "13920933111042"}
+|特定渠道发起的额外参数,json格式字符串.详见渠道参数说明
+
+|分账模式
+|divisionMode
+|否
+|int
+|0
+a|分账模式：
+
+- 0-该笔订单不允许分账[默认],
+- 1-支付成功按配置自动完成分账,
+- 2-商户手动分账(解冻商户金额)
+
+|扩展参数
+|extParam
+|否
+|String(512)
+|134586944573118714
+|商户扩展参数,回调时会原样返回
+
+|请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|请求接口时间,13位时间戳
+
+|接口版本
+|version
+|是
+|String(3)
+|1.0
+|接口版本号，固定：1.0
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+
+|签名类型
+|signType
+|是
+|String(32)
+|MD5
+|签名类型，目前只支持MD5方式
+|===
+
+请求示例数据：
+
+[source, json]
+----
+{
+  "amount": 8,
+  "extParam": "",
+  "mchOrderNo": "mho1624005107281",
+  "subject": "商品标题",
+  "wayCode": "ALI_BAR",
+  "sign": "84F606FA25A6EC4783BECC08D4FDC681",
+  "reqTime": "1624005107",
+  "body": "商品描述",
+  "version": "1.0",
+  "channelExtra": "{\"authCode\":\"280812820366966512\"}",
+  "appId": "60cc09bce4b0f1c0b83761c9",
+  "clientIp": "192.166.1.132",
+  "notifyUrl": "https://www.jeequan.com",
+  "signType": "MD5",
+  "currency": "cny",
+  "returnUrl": "",
+  "mchNo": "M1623984572",
+  "divisionMode": 1
+}
+----
+
+==== 返回参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|返回状态
+|code
+|是
+|int
+|0
+|0-处理成功，其他-处理有误，详见错误码
+
+|返回信息
+|msg
+|否
+|String(128)
+|签名失败
+|具体错误原因，例如：签名失败、参数格式校验错误
+
+|签名信息
+|sign
+|否
+|String(32)
+|CCD9083A6DAD9A2DA9F668C3D4517A84
+|对data内数据签名,如data为空则不返回
+
+|返回数据
+|data
+|否
+|String(512)
+|{}
+|返回下单数据,json格式数据
+|===
+
+data 数据格式
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|U12021022311124442600
+|返回支付系统订单号
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|返回商户传入的订单号
+
+|订单状态
+|orderState
+|是
+|int
+|2
+a|支付订单状态
+
+- 0-订单生成
+- 1-支付中
+- 2-支付成功
+- 3-支付失败
+- 4-已撤销
+- 5-已退款
+- 6-订单关闭
+
+|支付数据类型
+|payDataType
+|是
+|String
+|payUrl
+a|支付参数类型
+
+- payUrl-跳转链接的方式
+- form-表单方式
+- wxapp-微信支付参数(微信公众号,小程序,app支付时)
+- aliapp-支付宝app支付参数
+- ysfapp-云闪付app支付参数
+- codeUrl-二维码地址
+- codeImgUrl-二维码图片地址
+- none-空支付参数
+
+|支付数据
+|payData
+|否
+|String
+|http://www.jeequan.com/pay.html
+|发起支付用到的支付参数，如果微信公众号支付等
+
+|渠道错误码
+|errCode
+|否
+|String
+|ACQ.PAYMENT_AUTH_CODE_INVALID
+|上游渠道返回的错误码
+
+|渠道错误描述
+|errMsg
+|否
+|String
+|Business Failed 失败
+|上游渠道返回的错误描述
+|===
+
+返回示例数据
+
+[source, json]
+----
+{
+  "code": 0,
+  "data": {
+    "errCode": "ACQ.PAYMENT_AUTH_CODE_INVALID",
+    "errMsg": "Business Failed【支付失败，获取顾客账户信息失败，请顾客刷新付款码后重新收款，如再次收款失败，请联系管理员处理。[SOUNDWAVE_PARSER_FAIL]】",
+    "mchOrderNo": "mho1624005752661",
+    "orderState": 3,
+    "payOrderId": "P202106181642329900002"
+  },
+  "msg": "SUCCESS",
+  "sign": "F4DA202C516D1F33A12F1E547C5004FD"
+}
+----
+
+==== 支付方式
+
+|===
+|WayCode|支付方式
+
+|QR_CASHIER
+|聚合扫码(用户扫商家)
+
+|AUTO_BAR
+|聚合条码(商家扫用户)
+
+|ALI_BAR
+|支付宝条码
+
+|ALI_JSAPI
+|支付宝生活号
+
+|ALI_APP
+|支付宝APP
+
+|ALI_WAP
+|支付宝WAP
+
+|ALI_PC
+|支付宝PC网站
+
+|ALI_QR
+|支付宝二维码
+
+|WX_BAR
+|微信条码
+
+|WX_JSAPI
+|微信公众号
+
+|WX_LITE
+|微信小程序
+
+|WX_APP
+|微信APP
+
+|WX_H5
+|微信H5
+
+|WX_NATIVE
+|微信扫码
+
+|YSF_BAR
+|云闪付条码
+
+|YSF_JSAPI
+|云闪付jsapi
+|===
+
+channelExtra 参数说明：
+
+当 wayCode=AUTO_BAR 或 wayCode=ALI_BAR 或 wayCode=WX_BAR 或 wayCode=YSF_BAR 时，channelExtra 必须传 auth_code，为用户的付款码值，channelExtra 示例数据如：
+
+[source, json]
+----
+{"auth_code": "13920933111042"}
+----
+
+当 wayCode=ALI_JSAPI 时，channelExtra 必须传 buyerUserId，为支付宝用户ID，channelExtra 示例数据如：
+
+[source, json]
+----
+{"buyerUserId": "2088702585070844"}
+----
+
+当 wayCode=WX_JSAPI 或 wayCode=WX_LITE 时，channelExtra 必须传 openid，channelExtra 示例数据如：
+
+[source, json]
+----
+{"openid": "o6BcIwvSiRpfS8e_UyfQNrYuk2LI"}
+----
+
+当 wayCode=QR_CASHIER 或 wayCode=ALI_QR 或 wayCode=WX_NATIVE 时，channelExtra 可以传 payDataType 设置返回支付数据支付类型。此时 payDataType 可以为：codeUrl-二维码地址,codeImgUrl-二维码图片地址，不传 payDataType 默认返回 codeUrl 类型, channelExtra 示例数据如：
+
+[source, json]
+----
+{"payDataType": "codeImgUrl"}
+----
+
+当 wayCode=ALI_WAP 时，channelExtra 可以传 payDataType 设置返回支付数据支付类型。此时 payDataType 可以为：form-返回自动跳转的支付表单,codeImgUrl-返回一个二维码图片URL,payUrl-返回支付链接，不传 payDataType 默认返回 payUrl 类型, channelExtra 示例数据如：
+
+[source, json]
+----
+{"payDataType": "form"}
+----
+
+当 wayCode=ALI_PC 时，channelExtra 可以传 payDataType 设置返回支付数据支付类型。此时 payDataType 可以为：form-返回自动跳转的支付表单,payUrl-返回支付链接，不传 payDataType 默认返回 payUrl 类型, channelExtra 示例数据如：
+
+[source, json]
+----
+{"payDataType": "form"}
+----
+
+=== 查询支付订单
+
+商户通过该接口查询订单，支付网关会返回订单最新的数据。
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求URL： https://pay.jeepay.vip/api/pay/query
+- 请求方式：POST
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|P20160427210604000490
+|支付中心生成的订单号，与mchOrderNo二者传一即可
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|商户生成的订单号，与payOrderId二者传一即可
+
+|请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|请求接口时间,13位时间戳
+
+|接口版本
+|version
+|是
+|String(3)
+|1.0
+|接口版本号，固定：1.0
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+
+|签名类型
+|signType
+|是
+|String(32)
+|MD5
+|签名类型，目前只支持MD5方式
+|===
+
+请求示例数据
+
+[source, json]
+----
+{
+  "payOrderId": "P202106181104177050002",
+  "appId": "60cc09bce4b0f1c0b83761c9",
+  "sign": "46940C58B2F3AE426B77A297ABF4D31E",
+  "signType": "MD5",
+  "reqTime": "1624006009",
+  "mchNo": "M1623984572",
+  "version": "1.0"
+}
+----
+
+==== 返回参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|返回状态
+|code
+|是
+|int
+|0
+|0-处理成功，其他-处理有误，详见错误码
+
+|返回信息
+|msg
+|否
+|String(128)
+|签名失败
+|具体错误原因，例如：签名失败、参数格式校验错误
+
+|签名信息
+|sign
+|否
+|String(32)
+|CCD9083A6DAD9A2DA9F668C3D4517A84
+|对 data 内数据签名,如 data 为空则不返回
+
+|返回数据
+|data
+|否
+|String(512)
+|{}
+|返回下单数据,json 格式数据
+|===
+
+data 数据格式：
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|P12021022311124442600
+|返回支付系统订单号
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|返回商户传入的订单号
+
+|支付接口
+|ifCode
+|是
+|String(30)
+|wxpay
+|支付接口编码
+
+|支付方式
+|wayCode
+|是
+|String(30)
+|WX_LITE
+|支付方式,如微信小程序WX_LITE
+
+|支付金额
+|amount
+|是
+|int
+|100
+|支付金额,单位分
+
+|货币代码
+|currency
+|是
+|String(3)
+|cny
+|三位货币代码,人民币:cny
+
+|订单状态
+|state
+|是
+|int
+|2
+a|支付订单状态
+
+- 0-订单生成
+- 1-支付中
+- 2-支付成功
+- 3-支付失败
+- 4-已撤销
+- 5-已退款
+- 6-订单关闭
+
+|客户端IP
+|clientIp
+|否
+|String(32)
+|210.73.10.148
+|客户端IPV4地址
+
+|商品标题
+|subject
+|是
+|String(64)
+|Jeepay商品标题测试
+|商品标题
+
+|商品描述
+|body
+|是
+|String(256)
+|Jeepay商品描述测试
+|商品描述
+
+|渠道订单号
+|channelOrderNo
+|否
+|String
+|20160427210604000490
+|对应渠道的订单号
+
+|渠道错误码
+|errCode
+|否
+|String
+|1002
+|渠道下单返回错误码
+
+|渠道错误描述
+|errMsg
+|否
+|String
+|业务异常错误
+|渠道下单返回错误描述
+
+|扩展参数
+|extParam
+|否
+|String(512)
+|134586944573118714
+|商户扩展参数,回调时会原样返回
+
+|创建时间
+|createdAt
+|是
+|long
+|1622016572190
+|订单创建时间,13位时间戳
+
+|成功时间
+|successTime
+|否
+|long
+|1622016572190
+|订单支付成功时间,13位时间戳
+|===
+
+返回示例数据：
+
+[source, json]
+----
+{
+  "code": 0,
+  "data": {
+    "amount": 58,
+    "appId": "60cc09bce4b0f1c0b83761c9",
+    "body": "商品描述",
+    "channelOrderNo": "2021061822001423031419593035",
+    "clientIp": "192.166.1.132",
+    "createdAt": 1623985457705,
+    "currency": "cny",
+    "extParam": "",
+    "ifCode": "alipay",
+    "mchNo": "M1623984572",
+    "mchOrderNo": "mho1623985457320",
+    "payOrderId": "P202106181104177050002",
+    "state": 2,
+    "subject": "商品标题",
+    "successTime": 1623985459000,
+    "wayCode": "ALI_BAR"
+  },
+  "msg": "SUCCESS",
+  "sign": "9548145EA12D0CD8C1628BCF44E19E0D"
+}
+----
+
+=== 关闭支付订单
+
+商户通过该接口关闭订单，支付网关会对订单完成关闭处理。
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求URL： https://pay.jeepay.vip/api/pay/close
+- 请求方式：POST
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|P20160427210604000490
+|支付中心生成的订单号，与mchOrderNo二者传一即可
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|商户生成的订单号，与payOrderId二者传一即可
+
+|请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|请求接口时间,13位时间戳
+
+|接口版本
+|version
+|是
+|String(3)
+|1.0
+|接口版本号，固定：1.0
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+
+|签名类型
+|signType
+|是
+|String(32)
+|MD5
+|签名类型，目前只支持 MD5 方式
+|===
+
+请求示例数据：
+
+[source, json]
+----
+{
+  "payOrderId": "P202106181104177050002",
+  "appId": "60cc09bce4b0f1c0b83761c9",
+  "sign": "46940C58B2F3AE426B77A297ABF4D31E",
+  "signType": "MD5",
+  "reqTime": "1624006009",
+  "mchNo": "M1623984572",
+  "version": "1.0"
+}
+----
+
+==== 返回参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|返回状态
+|code
+|是
+|int
+|0
+|0-处理成功，其他-处理有误，详见错误码
+
+|返回信息
+|msg
+|否
+|String(128)
+|签名失败
+|具体错误原因，例如：签名失败、参数格式校验错误
+
+|签名信息
+|sign
+|否
+|String(32)
+|CCD9083A6DAD9A2DA9F668C3D4517A84
+|对 data 内数据签名,如 data 为空则不返回
+
+|返回数据
+|data
+|否
+|String(512)
+|{}
+|返回下单数据,json 格式数据
+|===
+
+data 数据格式：
+
+
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|渠道错误码
+|errCode
+|否
+|String
+|1002
+|渠道关单返回错误码
+
+|渠道错误描述
+|errMsg
+|否
+|String
+|关闭异常
+|渠道关单返回错误描述
+|===
+
+返回示例数据：
+
+[source, json]
+----
+{
+  "code": 0,
+  "data": {
+    "errCode": '',
+    "errMsg": ''
+  },
+  "msg": "SUCCESS",
+  "sign": "9548145EA12D0CD8C1628BCF44E19E0D"
+}
+----
+
+=== 支付结果通知
+
+当订单支付成功时，支付网关会向商户系统发起回调通知。如果商户系统没有正确返回，支付网关会延迟再次通知。
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求 URL：该链接是通过统一下单接口提交的参数 notifyUrl 设置，如果无法访问链接，商户系统将无法接收到支付中心的通知。
+- 请求方式：POST
+- 请求类型：application/x-www-form-urlencoded
+
+==== 通知参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|P12021022311124442600
+|返回支付系统订单号
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|返回商户传入的订单号
+
+|支付接口
+|ifCode
+|是
+|String(30)
+|wxpay
+|支付接口编码
+
+|支付方式
+|wayCode
+|是
+|String(30)
+|WX_LITE
+|支付方式,微信小程序 WX_LITE
+
+|支付金额
+|amount
+|是
+|int
+|100
+|支付金额,单位分
+
+|货币代码
+|currency
+|是
+|String(3)
+|cny
+|三位货币代码,人民币:cny
+
+|订单状态
+|state
+|是
+|int
+|2
+a|支付订单状态
+
+- 0-订单生成
+- 1-支付中
+- 2-支付成功
+- 3-支付失败
+- 4-已撤销
+- 5-已退款
+- 6-订单关闭
+
+|客户端IP
+|clientIp
+|否
+|String(32)
+|210.73.10.148
+|客户端IPV4地址
+
+|商品标题
+|subject
+|是
+|String(64)
+|Jeepay商品标题测试
+|商品标题
+
+|商品描述
+|body
+|是
+|String(256)
+|Jeepay商品描述测试
+|商品描述
+
+|渠道订单号
+|channelOrderNo
+|否
+|String
+|20160427210604000490
+|对应渠道的订单号
+
+|渠道错误码
+|errCode
+|否
+|String
+|1002
+|渠道下单返回错误码
+
+|渠道错误描述
+|errMsg
+|否
+|String
+|134586944573118714
+|渠道下单返回错误描述
+
+|扩展参数
+|extParam
+|否
+|String(512)
+|134586944573118714
+|商户扩展参数
+
+|创建时间
+|createdAt
+|是
+|long
+|1622016572190
+|订单创建时间,13位时间戳
+
+|成功时间
+|successTime
+|否
+|long
+|1622016572190
+|订单支付成功时间,13位时间戳
+
+|通知请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|通知请求时间，,13位时间戳
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+|===
+
+通知示例数据：
+
+[source, json]
+----
+{
+    "amount": 5,
+    "body": "商品描述",
+    "clientIp": "192.166.1.132",
+    "createdAt": "1622016572190",
+    "currency": "cny",
+    "extParam": "",
+    "ifCode": "wxpay",
+    "mchNo": "M1621873433953",
+    "appId": "60cc09bce4b0f1c0b83761c9",
+    "mchOrderNo": "mho1621934803068",
+    "payOrderId": "20210525172643357010",
+    "state": 3,
+    "subject": "商品标题",
+    "wayCode": "WX_BAR",
+    "sign": "C380BEC2BFD727A4B6845133519F3AD6"
+}
+----
+
+==== 返回结果
+
+业务系统处理后同步返回给支付中心，返回字符串 success 则表示成功，返回非 success 则表示处理失败，支付中心会再次通知业务系统。（通知频率为 0/30/60/90/120/150,单位：秒）
+
+注意：返回的字符串不区分大小写，字符串前后不能有空格和换行符。
+
+=== 获取渠道用户ID
+
+商户通过该接口获取渠道的用户ID，如微信的 openID，支付宝的 userId。该接口通过跳转获取到用户ID后，会跳转到商户上传的 redirectUrl 地址，并传递用户ID参数
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求URL： https://pay.jeepay.vip/api/channelUserId/jump
+- 请求方式：GET
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|支付接口
+|ifCode
+|是
+|String(30)
+|AUTO
+|目前只支持传 AUTO
+
+|跳转地址
+|redirectUrl
+|是
+|String
+|https://www.jeequan.com
+|获取到用户ID后，会携带用户ID参数跳转到该地址
+
+|请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|请求接口时间,13位时间戳
+
+|接口版本
+|version
+|是
+|String(3)
+|1.0
+|接口版本号，固定：1.0
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+
+|签名类型
+|signType
+|是
+|String(32)
+|MD5
+|签名类型，目前只支持 MD5 方式
+|===
+
+请求示例数据：
+
+[source, json]
+----
+{
+  "mchNo": "M1621873433953",
+  "appId": "60cc09bce4b0f1c0b83761c9",
+  "ifCode": "wxpay",
+  "redirectUrl": "https://www.jeequan.com",
+  "sign": "A5C93D50743126ED91AA6ED96CDEEEF8",
+  "signType": "MD5",
+  "reqTime": "1622011236571",
+  "version": "1.0"
+}
+----
+
+==== 返回参数
+
+当获取到渠道用户 ID 后，会 301 重定向到跳转地址，传递参数如下：
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|渠道用户ID
+|channelUserId
+|是
+|String
+|o6BcIwvSiRpfS8e_UyfQNrYuk2LI
+|渠道用户ID，微信openId或支付宝userId
+|===
+
+完整跳转URL示例：
+
+[source, bash]
+----
+https://www.jeequan.com/toU?channelUserId=o6BcIwvSiRpfS8e_UyfQNrYuk2LI
+----
+
+=== 发起支付退款
+
+商户业务系统通过统一退款接口发起退款请求，Jeepay 支付网关会根据商户发起的支付订单号，找到对应到支付通道发起退款。
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求 URL： https://pay.jeepay.vip/api/refund/refundOrder
+- 请求方式：POST
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|商户号
+|mchNo
+|是
+|String(30)
+|M1621873433953
+|商户号
+
+|应用ID
+|appId
+|是
+|String(24)
+|60cc09bce4b0f1c0b83761c9
+|应用ID
+
+|支付订单号
+|payOrderId
+|是
+|String(30)
+|P20160427210604000490
+|支付中心生成的订单号，与mchOrderNo二者传一即可
+
+|商户订单号
+|mchOrderNo
+|是
+|String(30)
+|20160427210604000490
+|商户生成的支付订单号，与payOrderId二者传一即可
+
+|商户退款单号
+|mchRefundNo
+|是
+|String(30)
+|M27210632100491
+|商户生成的退款单号
+
+|退款金额
+|refundAmount
+|是
+|int
+|100
+|退款金额,单位分
+
+|货币代码
+|currency
+|是
+|String(3)
+|cny
+|三位货币代码,人民币:cny
+
+|退款原因
+|refundReason
+|是
+|String(64)
+|用户退货
+|退款原因
+
+|客户端IP
+|clientIp
+|否
+|String(32)
+|210.73.10.148
+|客户端IPV4地址
+
+|异步通知地址
+|notifyUrl
+|否
+|String(128)
+|https://www.jeequan.com/notify.htm
+|退款完成后回调该URL,只有传了该值才会发起回调
+
+|渠道参数
+|channelExtra
+|否
+|String(256)
+|{"auth_code", "13920933111042"}
+|特定渠道发起的额外参数,json格式字符串.详见渠道参数说明
+
+|扩展参数
+|extParam
+|否
+|String(512)
+|134586944573118714
+|商户扩展参数,回调时会原样返回
+
+|请求时间
+|reqTime
+|是
+|long
+|1622016572190
+|请求接口时间,13位时间戳
+
+|接口版本
+|version
+|是
+|String(3)
+|1.0
+|接口版本号，固定：1.0
+
+|签名
+|sign
+|是
+|String(32)
+|C380BEC2BFD727A4B6845133519F3AD6
+|签名值，详见签名算法
+
+|签名类型
+|signType
+|是
+|String(32)
+|MD5
+|签名类型，目前只支持 MD5 方式
+|===
+
+请求示例数据：
+
+[source, json]
+----
+{
+  "payOrderId": "P202106181104177050002",
+  "extParam": "",
+  "mchOrderNo": "",
+  "refundReason": "退款测试",
+  "sign": "2762CDB48D5179281DB6C0995E4EEDE0",
+  "reqTime": "1624007315",
+  "version": "1.0",
+  "channelExtra": "",
+  "appId": "60cc09bce4b0f1c0b83761c9",
+  "mchRefundNo": "mho1624007315478",
+  "clientIp": "192.166.1.132",
+  "notifyUrl": "https://www.jeequan.com",
+  "signType": "MD5",
+  "currency": "cny",
+  "mchNo": "M1623984572",
+  "refundAmount": 4
+}
+----
+
+==== 返回参数
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|返回状态
+|code
+|是
+|int
+|0
+|0-处理成功，其他-处理有误，详见错误码
+
+|返回信息
+|msg
+|否
+|String(128)
+|签名失败
+|具体错误原因，例如：签名失败、参数格式校验错误
+
+|签名信息
+|sign
+|否
+|String(32)
+|CCD9083A6DAD9A2DA9F668C3D4517A84
+|对data内数据签名,如data为空则不返回
+
+|返回数据
+|data
+|否
+|String(512)
+|{}
+|返回下单数据,json格式数据
+|===
+
+data 数据格式：
+
+[cols="1,1,1,1,3,3"]
+|===
+|字段名|变量名|必填|类型|示例值|描述
+
+|退款订单号
+|refundOrderId
+|是
+|String(30)
+|R202106181708358940000
+|返回退款订单号
+
+|商户退款单号
+|mchRefundNo
+|是
+|String(30)
+|mho1624007315478
+|返回商户传入的退款单号
+
+|退款状态
+|state
+|是
+|int
+|2
+a|退款状态
+
+- 0-订单生成
+- 1-退款中
+- 2-退款成功
+- 3-退款失败
+- 4-退款关闭
+
+|渠道退款单号
+|channelOrderNo
+|否
+|String
+|20160427210604000490
+|对应渠道的退款单号
+
+|渠道错误码
+|errCode
+|否
+|String
+|ACQ.PAYMENT_AUTH_CODE_INVALID
+|上游渠道返回的错误码
+
+|渠道错误描述
+|errMsg
+|否
+|String
+|Business Failed 失败
+|上游渠道返回的错误描述
+|===
+
+返回示例数据：
+
+[source, json]
+----
+{
+  "code": 0,
+  "data": {
+    "channelOrderNo": "2021061822001423031419593035",
+    "mchRefundNo": "mho1624007315478",
+    "payAmount": 58,
+    "refundAmount": 4,
+    "refundOrderId": "R202106181708358940000",
+    "state": 2
+  },
+  "msg": "SUCCESS",
+  "sign": "2843B811B7A75D56B7D1950362820875"
+}
+----
+
+=== 查询退款订单
+
+商户通过该接口查询退款订单，支付网关会返回订单最新的数据，
+
+==== 接口说明
+
+- 适用对象：普通商户、特约商户
+- 请求URL： https://pay.jeepay.vip/api/refund/query
+- 请求方式：POST
+- 请求类型：application/json 或 application/x-www-form-urlencoded
+
+==== 请求参数
+
+https://doc.jeequan.com/#/integrate/open/api/91
+
+==== 返回参数
+
+
+
+=== 退款结果通知
+
+
+== 转账接口
+
+=== 发起转账订单
+
+
+=== 查询转账订单
+
+
+
+=== 转账结果通知
+
+== 分账接口
+
+
+=== 绑定分账用户
+
+
+=== 发起订单分账
+
+
+== SDK下载
+
+为方便业务系统调用 HenPay，我们提供各语言的 sdk。
+
+* java-sdk
++
+下载地址： https://gitee.com/jeequan/jeepay-sdk-java
+
+* python-sdk
++
+下载地址： https://gitee.com/jeequan/jeepay-sdk-python
+
+* php demo
++
+下载地址： http://jeequan.oss-cn-beijing.aliyuncs.com/jeepay/doc/php.zip
