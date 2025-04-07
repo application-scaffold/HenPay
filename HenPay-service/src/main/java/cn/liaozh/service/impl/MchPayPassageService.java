@@ -1,7 +1,7 @@
 package cn.liaozh.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.liaozh.core.constants.CS;
 import cn.liaozh.core.entity.MchPayPassage;

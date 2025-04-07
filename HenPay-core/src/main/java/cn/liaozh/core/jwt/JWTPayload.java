@@ -1,7 +1,8 @@
 package cn.liaozh.core.jwt;
 
-import cn.liaozh.model.security.JeeUserDetails;
-import com.alibaba.fastjson.JSONObject;
+import cn.liaozh.core.model.security.JeeUserDetails;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import lombok.Data;
 
 import java.util.Map;
@@ -33,8 +34,8 @@ public class JWTPayload {
 
     /** toMap **/
     public Map<String, Object> toMap(){
-        JSONObject json = (JSONObject)JSONObject.toJSON(this);
-        return json.toJavaObject(Map.class);
+        // 直接解析对象为 Map
+        return JSON.parseObject(JSON.toJSONString(this), new TypeReference<Map<String, Object>>() {});
     }
 
 }

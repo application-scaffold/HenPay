@@ -1,0 +1,20 @@
+apply plugin: "java-library"
+
+dependencies {
+    // 核心项目依赖
+    implementation project(":HenPay-core")
+
+    // ActiveMQ 及连接池
+    api 'org.springframework.boot:spring-boot-starter-activemq'
+    implementation 'org.apache.activemq:activemq-pool'
+    implementation 'org.messaginghub:pooled-jms'
+
+    // RabbitMQ（编译期依赖）
+    api 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // RocketMQ（编译期依赖）
+    api 'org.apache.rocketmq:rocketmq-spring-boot-starter:2.3.1'
+
+    // 阿里云 ONS（编译期依赖）
+    compileOnly 'com.aliyun.openservices:ons-client:2.0.5.Final'  // 需确认具体版本号
+}

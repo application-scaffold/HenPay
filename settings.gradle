@@ -1,4 +1,11 @@
 rootProject.name = 'HenPay'
 include 'HenPay-core'
 include 'HenPay-service'
+include 'HenPay-components:HenPay-components-mq'
+findProject(':HenPay-components:HenPay-components-mq')?.name = 'HenPay-components-mq'
+include 'HenPay-components:HenPay-components-oss'
+findProject(':HenPay-components:HenPay-components-oss')?.name = 'HenPay-components-oss'
+include 'HenPay-payment'
+include 'HenPay-merchant'
+include 'HenPay-manager'
 

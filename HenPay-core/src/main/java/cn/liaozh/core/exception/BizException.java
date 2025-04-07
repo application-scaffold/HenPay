@@ -1,7 +1,7 @@
 package cn.liaozh.core.exception;
 
-import cn.liaozh.constants.ApiCodeEnum;
-import cn.liaozh.model.ApiRes;
+import cn.liaozh.core.constants.ApiCodeEnum;
+import cn.liaozh.core.model.ApiRes;
 import lombok.Getter;
 
 /*

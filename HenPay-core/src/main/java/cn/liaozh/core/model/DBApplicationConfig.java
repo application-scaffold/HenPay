@@ -1,8 +1,8 @@
 package cn.liaozh.core.model;
 
 import cn.hutool.core.util.URLUtil;
-import cn.liaozh.utils.HenPayKit;
-import com.alibaba.fastjson.JSONObject;
+import cn.liaozh.core.utils.HenPayKit;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
 
 import java.io.Serializable;

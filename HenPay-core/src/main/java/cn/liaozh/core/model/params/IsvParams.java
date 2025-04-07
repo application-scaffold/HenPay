@@ -1,7 +1,7 @@
 package cn.liaozh.core.model.params;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 
 /**
  * 抽象类 isv参数定义
@@ -11,7 +11,7 @@ public abstract class IsvParams {
     public static IsvParams factory(String ifCode, String paramsStr){
 
         try {
-            return (IsvParams)JSONObject.parseObject(paramsStr, Class.forName(IsvParams.class.getPackage().getName() +"."+ ifCode +"."+ StrUtil.upperFirst(ifCode) +"IsvParams"));
+            return (IsvParams) JSONObject.parseObject(paramsStr, Class.forName(IsvParams.class.getPackage().getName() +"."+ ifCode +"."+ StrUtil.upperFirst(ifCode) +"IsvParams"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

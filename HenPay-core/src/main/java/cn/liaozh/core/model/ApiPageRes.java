@@ -1,9 +1,10 @@
 package cn.liaozh.core.model;
 
-import cn.liaozh.constants.ApiCodeEnum;
+import cn.liaozh.core.constants.ApiCodeEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * 接口返回对象
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 @Schema(description = "分页res")
 public class ApiPageRes<M> extends ApiRes {
 

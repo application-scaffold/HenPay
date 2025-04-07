@@ -1,7 +1,7 @@
 package cn.liaozh.core.cache;
 
-import cn.liaozh.utils.SpringBeansUtil;
-import com.alibaba.fastjson.JSON;
+import cn.liaozh.core.utils.SpringBeansUtil;
+import com.alibaba.fastjson2.JSON;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.CollectionUtils;

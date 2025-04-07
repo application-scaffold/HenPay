@@ -1,10 +1,10 @@
 package cn.liaozh.core.model;
 
-import cn.liaozh.constants.ApiCodeEnum;
-import cn.liaozh.utils.HenPayKit;
-import cn.liaozh.utils.JsonKit;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.liaozh.core.constants.ApiCodeEnum;
+import cn.liaozh.core.utils.HenPayKit;
+import cn.liaozh.core.utils.JsonKit;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -76,7 +76,7 @@ public class ApiRes<M> implements Serializable {
             return new ApiRes(ApiCodeEnum.SUCCESS.getCode(), ApiCodeEnum.SUCCESS.getMsg(), null, null);
         }
 
-        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(data);
+        JSONObject jsonObject = JSONObject.from(data);
         String sign = HenPayKit.getSign(jsonObject, mchKey);
         return new ApiRes(ApiCodeEnum.SUCCESS.getCode(), ApiCodeEnum.SUCCESS.getMsg(), data, sign);
     }

@@ -1,6 +1,6 @@
 package cn.liaozh.core.utils;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 
 /*
 * json工具类

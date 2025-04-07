@@ -1,0 +1,28 @@
+apply plugin: "java-library"
+
+dependencies {
+    // 核心依赖
+    implementation project(":HenPay-core")
+
+    // Spring 相关（provided 转 compileOnly）
+    compileOnly 'org.springframework:spring-webmvc'
+    compileOnly 'org.springframework.boot:spring-boot'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+
+    // SLF4J
+    implementation 'org.slf4j:slf4j-api'
+
+    // 阿里云 OSS（条件化配置）
+    def useAliyunOSS = project.hasProperty('useAliyunOSS')
+    if (useAliyunOSS) {
+        implementation 'com.aliyun.oss:aliyun-sdk-oss:3.17.4'
+    } else {
+        compileOnly 'com.aliyun.oss:aliyun-sdk-oss:3.17.4' // 默认仅编译期
+    }
+
+    // Jakarta 注解
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1' // 版本根据 BOM 管理
+
+    // 测试依赖（可选）
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

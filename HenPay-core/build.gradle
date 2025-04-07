@@ -13,13 +13,17 @@ dependencies {
     }
 
     // JWT 工具
-    api 'io.jsonwebtoken:jjwt:0.12.3'
+    api 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
     // Spring Security
-    api 'org.springframework.security:spring-security-core:6.2.0'
+    api 'org.springframework.boot:spring-boot-starter-security'
 
     // 工具类库
-    api 'com.alibaba:fastjson:2.0.42'
+    api 'com.alibaba.fastjson2:fastjson2:2.0.42'
+    api 'com.alibaba.fastjson2:fastjson2-extension:2.0.42'
+    api 'com.alibaba.fastjson2:fastjson2-extension-spring6:2.0.42'
     api 'org.apache.commons:commons-lang3:3.13.0'
     api 'javax.xml.bind:jaxb-api:2.3.1'
 

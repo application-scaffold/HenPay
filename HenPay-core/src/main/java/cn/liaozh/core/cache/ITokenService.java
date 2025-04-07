@@ -1,7 +1,7 @@
 package cn.liaozh.core.cache;
 
-import cn.liaozh.constants.CS;
-import cn.liaozh.model.security.JeeUserDetails;
+import cn.liaozh.core.constants.CS;
+import cn.liaozh.core.model.security.JeeUserDetails;
 
 public class ITokenService {
 

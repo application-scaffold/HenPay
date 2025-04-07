@@ -1,7 +1,7 @@
 package cn.liaozh.core.entity;
 
 import cn.liaozh.core.model.BaseModel;
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

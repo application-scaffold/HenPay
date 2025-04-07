@@ -1,6 +1,6 @@
 package cn.liaozh.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.liaozh.core.entity.SysConfig;
 import cn.liaozh.core.model.DBApplicationConfig;

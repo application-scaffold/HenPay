@@ -1,6 +1,6 @@
 package cn.liaozh.core.model.params.ysf;
 
-import cn.liaozh.model.params.IsvsubMchParams;
+import cn.liaozh.core.model.params.IsvsubMchParams;
 import lombok.Data;
 
 /*
