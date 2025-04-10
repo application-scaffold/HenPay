@@ -33,9 +33,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig{
 
-    @Autowired private UserDetailsService userDetailsService;
-    @Autowired private JeeAuthenticationEntryPoint unauthorizedHandler;
-    @Autowired private SystemYmlConfig systemYmlConfig;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private JeeAuthenticationEntryPoint unauthorizedHandler;
+    @Autowired
+    private SystemYmlConfig systemYmlConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

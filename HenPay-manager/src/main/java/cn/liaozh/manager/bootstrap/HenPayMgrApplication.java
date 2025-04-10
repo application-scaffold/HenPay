@@ -35,7 +35,6 @@ public class HenPayMgrApplication {
 
     }
 
-
     /** fastJson 配置信息 **/
     @Bean
     public HttpMessageConverters fastJsonConfig(){

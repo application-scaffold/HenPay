@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/anon/auth")
 public class AuthController extends CommonCtrl {
 
-	@Autowired private AuthService authService;
+	@Autowired
+	private AuthService authService;
 
 	/** 用户信息认证 获取iToken  **/
 	@Operation(summary = "登录认证")

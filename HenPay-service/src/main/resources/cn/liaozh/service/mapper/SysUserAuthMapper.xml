@@ -20,5 +20,4 @@
         where a.identity_type = #{identityType} and a.identifier = #{identifier} and a.sys_type = #{sysType}
     </select>
 
-
 </mapper>
