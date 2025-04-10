@@ -1,11 +1,10 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
           <div class="table-layer">
-            <jeepay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
-            <jeepay-text-up placeholder="应用名称" v-model:value="vdata.searchData.appName" />
+            <henpay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
+            <henpay-text-up placeholder="应用名称" v-model:value="vdata.searchData.appName" />
             <a-select
               v-model:value="vdata.searchData.state"
               placeholder="状态"
@@ -28,7 +27,7 @@
         </a-form>
       </div>
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -56,7 +55,7 @@
           </template>
           <template v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_MCH_APP_EDIT')"
@@ -89,16 +88,15 @@
               >
                 删除
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
     <!-- 新增应用  -->
     <MchAppAddOrEdit ref="mchAppAddOrEditRef" :callbackFunc="searchFunc" />
     <!-- 支付参数配置页面组件  -->
     <MchPayIfConfigList ref="mchPayIfConfigList" />
-  </page-header-wrapper>
 </template>
 
 <script setup lang="ts">
@@ -114,16 +112,16 @@ const tableColumns = [
   {
     key: 'appId',
     fixed: 'left',
-    width: '320px',
+    width: 320,
     title: '应用AppId',
   },
-  { key: 'appName', title: '应用名称', dataIndex: 'appName' },
-  { key: 'state', title: '状态', scopedSlots: { customRender: 'stateSlot' } },
-  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期' },
+  { key: 'appName', title: '应用名称', dataIndex: 'appName', width: 200 },
+  { key: 'state', title: '状态', scopedSlots: { customRender: 'stateSlot' }, width: 200 },
+  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期', width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '260px',
+    width: 260,
     fixed: 'right',
     align: 'center',
   },

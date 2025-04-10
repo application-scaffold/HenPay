@@ -1,6 +1,5 @@
 <template>
-  <page-header-wrapper>
-  </page-header-wrapper>
+
 </template>
 <script>
 

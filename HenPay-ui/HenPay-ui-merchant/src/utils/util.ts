@@ -7,3 +7,10 @@ export function isIE() {
   const ie11 = 'ActiveXObject' in window;
   return /MSIE/.test(navigator.userAgent) || ie11;
 }
+
+// 定义全局自增ID
+var atomicLong = 1
+/** 生成自增序列号（不重复） **/
+export function genRowKey () {
+  return new Date().getTime() + '_' + (atomicLong++)
+}

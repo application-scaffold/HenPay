@@ -19,7 +19,7 @@
           <a-form
             ref="formLogin"
             class="user-layout-login"
-            model="formState"
+            :model="formState"
             :rules="{ name: [{ required: true }] }"
             @submit="handleSubmit"
           >
@@ -129,7 +129,7 @@ onMounted(() => {
   refVercode()
 })
 
-function handleSubmit(e) {
+function handleSubmit() {
   let loginParams = {
     username: formState.username,
     password: formState.password,

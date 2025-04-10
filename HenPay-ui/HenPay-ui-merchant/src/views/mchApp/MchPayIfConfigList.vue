@@ -15,7 +15,7 @@
     </template>
 
     <div v-if="vdata.currentStep === 0">
-      <JeepayCard
+      <henpay-card
         ref="infoCard"
         :req-card-list-func="reqCardListFunc"
         :span="vdata.jeepayCard.span"
@@ -73,7 +73,7 @@
             </div>
           </div>
         </template>
-      </JeepayCard>
+      </henpay-card>
     </div>
     <div v-else-if="vdata.currentStep === 1">
       <a-card>
@@ -103,7 +103,7 @@
         </div>
 
         <!-- 列表渲染 -->
-        <JeepayTable
+        <henpay-table
           ref="infoTable"
           :init-data="true"
           :req-table-data-func="reqTableDataFunc"
@@ -120,7 +120,7 @@
             </template>
             <template v-if="column.key === 'op'">
               <!-- 操作列插槽 -->
-              <JeepayTableColumns>
+              <henpay-table-columns>
                 <a-button
                   v-if="$access('ENT_MCH_PAY_PASSAGE_CONFIG')"
                   type="link"
@@ -128,10 +128,10 @@
                 >
                   配置
                 </a-button>
-              </JeepayTableColumns>
+              </henpay-table-columns>
             </template>
           </template>
-        </JeepayTable>
+        </henpay-table>
       </a-card>
     </div>
     <div class="drawer-btn-center">
@@ -182,13 +182,13 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { key: 'wayCode', title: '支付方式代码', dataIndex: 'wayCode' },
-  { key: 'wayName', title: '支付方式名称', dataIndex: 'wayName' },
-  { key: 'passageState', title: '状态', scopedSlots: { customRender: 'stateSlot' } },
+  { key: 'wayCode', title: '支付方式代码', dataIndex: 'wayCode', width: 200 },
+  { key: 'wayName', title: '支付方式名称', dataIndex: 'wayName', width: 200 },
+  { key: 'passageState', title: '状态', scopedSlots: { customRender: 'stateSlot' }, width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '200px',
+    width: 200,
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },

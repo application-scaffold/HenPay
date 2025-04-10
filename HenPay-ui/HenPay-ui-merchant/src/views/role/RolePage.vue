@@ -1,11 +1,10 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div v-if="$access('ENT_UR_ROLE_SEARCH')" class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
           <div class="table-layer">
-            <jeepay-text-up :placeholder="'角色ID'" v-model:value="vdata.searchData.roleId" />
-            <jeepay-text-up :placeholder="'角色名称'" v-model:value="vdata.searchData.roleName" />
+            <henpay-text-up :placeholder="'角色ID'" v-model:value="vdata.searchData.roleId" />
+            <henpay-text-up :placeholder="'角色名称'" v-model:value="vdata.searchData.roleName" />
             <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchFunc" :loading="vdata.btnLoading">
                 查询
@@ -19,7 +18,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         ref="infoTable"
         :initData="true"
         :reqTableDataFunc="reqTableDataFunc"
@@ -41,7 +40,7 @@
           <!-- 自定义插槽 -->
           <template v-if="column.key == 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_UR_ROLE_EDIT')"
@@ -57,15 +56,14 @@
               >
                 删除
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
 
     <!-- 新增 / 修改 页面组件  -->
     <InfoAddOrEdit ref="infoAddOrEdit" :callbackFunc="searchFunc" />
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_ROLE_LIST, req } from '@/api/manage'
@@ -76,14 +74,14 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
   {
-    width: '40%',
+    width: 200,
     key: 'roleId', // key为必填项，用于标志该列的唯一
     title: '角色ID',
     sorter: true,
     scopedSlots: { customRender: 'roleIdSlot' },
   },
   {
-    width: '40%',
+    width: 200,
     key: 'roleName',
     title: '角色名称',
     dataIndex: 'roleName',
@@ -92,7 +90,7 @@ const tableColumns = [
   {
     key: 'op',
     title: '操作',
-    width: '200px',
+    width: 200,
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },
   },

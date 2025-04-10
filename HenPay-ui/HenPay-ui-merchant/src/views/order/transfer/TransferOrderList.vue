@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
@@ -15,14 +14,14 @@
 <!--              <a-icon slot="suffixIcon" type="sync" />-->
               <sync-outlined slot="suffixIcon" />
             </a-range-picker>
-            <jeepay-text-up
+            <henpay-text-up
               :placeholder="'转账/商户/渠道订单号'"
               v-model:value="vdata.searchData.unionOrderId"
             />
-            <!--            <jeepay-text-up :placeholder="'转账订单号'" :msg="searchData.transferId" v-model:value="searchData.transferId" />-->
-            <!--            <jeepay-text-up :placeholder="'商户订单号'" :msg="searchData.mchOrderNo" v-model:value="searchData.mchOrderNo" />-->
-            <!--            <jeepay-text-up :placeholder="'渠道支付订单号'" :msg="searchData.channelOrderNo" v-model:value="searchData.channelOrderNo" />-->
-            <jeepay-text-up :placeholder="'应用AppId'" v-model:value="vdata.searchData.appId" />
+            <!--            <henpay-text-up :placeholder="'转账订单号'" :msg="searchData.transferId" v-model:value="searchData.transferId" />-->
+            <!--            <henpay-text-up :placeholder="'商户订单号'" :msg="searchData.mchOrderNo" v-model:value="searchData.mchOrderNo" />-->
+            <!--            <henpay-text-up :placeholder="'渠道支付订单号'" :msg="searchData.channelOrderNo" v-model:value="searchData.channelOrderNo" />-->
+            <henpay-text-up :placeholder="'应用AppId'" v-model:value="vdata.searchData.appId" />
             <a-select
               v-model:value="vdata.searchData.state"
               placeholder="转账状态"
@@ -55,7 +54,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -136,7 +135,7 @@
           </template>
           <template v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_TRANSFER_ORDER_VIEW')"
@@ -144,15 +143,14 @@
               >
                 详情
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
 
     <!-- 订单详情 页面组件  -->
     <TransferOrderDetail ref="transferOrderDetailRef" />
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_TRANSFER_ORDER_LIST, req } from '@/api/manage'
@@ -164,19 +162,19 @@ const { $access } = getCurrentInstance()!.appContext.config.globalProperties
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { title: '转账金额', key: 'amount' },
+  { title: '转账金额', key: 'amount', width: 200 },
   { key: 'orderNo', title: '订单号', scopedSlots: { customRender: 'orderSlot' }, width: 260 },
   // { title: '转账订单号', dataIndex: 'transferId' },
   // { title: '商户转账单号', dataIndex: 'mchOrderNo' },
   // { title: '渠道订单号', dataIndex: 'channelOrderNo' },
   { title: '收款账号', dataIndex: 'accountNo', width: 200 },
-  { title: '收款人姓名', dataIndex: 'accountName' },
-  { title: '转账备注', dataIndex: 'transferDesc' },
+  { title: '收款人姓名', dataIndex: 'accountName', width: 200 },
+  { title: '转账备注', dataIndex: 'transferDesc', width: 200 },
   { title: '状态', key: 'state', width: 100 },
-  { title: '创建日期', dataIndex: 'createdAt' },
+  { title: '创建日期', dataIndex: 'createdAt', width: 200 },
   {
     title: '操作',
-    width: '100px',
+    width: 100,
     fixed: 'right',
     align: 'center',
     key: 'op',
@@ -189,7 +187,7 @@ const vdata: any = reactive({
   searchData: {},
   createdStart: '', // 选择开始时间
   createdEnd: '', // 选择结束时间
-  date: '',
+  date: [],
 })
 
 const infoTable = ref()

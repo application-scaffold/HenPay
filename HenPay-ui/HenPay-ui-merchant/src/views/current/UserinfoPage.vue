@@ -118,7 +118,7 @@ import { updateUserInfo, updateUserPass, getUserInfo, upload } from '@/api/manag
 
 import { reactive, getCurrentInstance, ref } from 'vue'
 
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/stores/user'
 import { LoadingOutlined, UploadOutlined } from '@ant-design/icons-vue'
 const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProperties
 

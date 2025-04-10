@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div v-if="$access('ENT_DIVISION_RECEIVER_LIST')" class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
@@ -15,15 +14,15 @@
               </a-select-option>
             </a-select>
 
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="分账接收者ID[精准]"
               v-model:value="vdata.searchData.receiverId"
             />
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="接收者账号别名[模糊]"
               v-model:value="vdata.searchData.receiverAlias"
             />
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="组ID[精准]"
               v-model:value="vdata.searchData.receiverGroupId"
             />
@@ -115,7 +114,6 @@
       <!-- 修改 页面组件  -->
       <ReceiverEdit ref="receiverEdit" :callbackFunc="searchFunc" />
     </a-card>
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_DIVISION_RECEIVER, API_URL_MCH_APP, req } from '@/api/manage'
@@ -125,15 +123,15 @@ import { reactive, ref, onMounted, getCurrentInstance } from 'vue'
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { key: 'receiverId', dataIndex: 'receiverId', title: '绑定ID' },
-  { key: 'ifCode', title: '渠道类型', scopedSlots: { customRender: 'ifCodeSlot' } },
-  { key: 'receiverAlias', dataIndex: 'receiverAlias', title: '账号别名' },
-  { key: 'receiverGroupName', dataIndex: 'receiverGroupName', title: '组名称' },
-  { key: 'accNo', dataIndex: 'accNo', title: '分账接收账号' },
-  { key: 'accName', dataIndex: 'accName', title: '分账接收账号名称' },
-  { key: 'relationTypeName', dataIndex: 'relationTypeName', title: '分账关系类型' },
-  { title: '状态', key: 'state', scopedSlots: { customRender: 'stateSlot' }, align: 'center' },
-  { key: 'bindSuccessTime', dataIndex: 'bindSuccessTime', title: '绑定成功时间' },
+  { key: 'receiverId', dataIndex: 'receiverId', title: '绑定ID',width: 200 },
+  { key: 'ifCode', title: '渠道类型', scopedSlots: { customRender: 'ifCodeSlot' },width: 200 },
+  { key: 'receiverAlias', dataIndex: 'receiverAlias', title: '账号别名',width: 200 },
+  { key: 'receiverGroupName', dataIndex: 'receiverGroupName', title: '组名称', width: 200 },
+  { key: 'accNo', dataIndex: 'accNo', title: '分账接收账号', width: 200 },
+  { key: 'accName', dataIndex: 'accName', title: '分账接收账号名称', width: 200 },
+  { key: 'relationTypeName', dataIndex: 'relationTypeName', title: '分账关系类型', width: 200 },
+  { title: '状态', key: 'state', scopedSlots: { customRender: 'stateSlot' }, align: 'center', width: 200 },
+  { key: 'bindSuccessTime', dataIndex: 'bindSuccessTime', title: '绑定成功时间', width: 200 },
   {
     key: 'divisionProfit',
     dataIndex: 'divisionProfit',
@@ -141,11 +139,12 @@ const tableColumns = [
     customRender: ({ text }) => {
       return (text * 100).toFixed(2) + '%'
     },
+    width: 200
   },
   {
     key: 'op',
     title: '操作',
-    width: '100px',
+    width: 100,
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },

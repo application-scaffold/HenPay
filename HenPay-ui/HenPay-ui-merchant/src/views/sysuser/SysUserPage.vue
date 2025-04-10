@@ -1,11 +1,10 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div v-if="$access('ENT_UR_USER_SEARCH')" class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
           <div class="table-layer">
-            <jeepay-text-up :placeholder="'用户ID'" v-model:value="vdata.searchData.sysUserId" />
-            <jeepay-text-up :placeholder="'用户姓名'" v-model:value="vdata.searchData.realname" />
+            <henpay-text-up :placeholder="'用户ID'" v-model:value="vdata.searchData.sysUserId" />
+            <henpay-text-up :placeholder="'用户姓名'" v-model:value="vdata.searchData.realname" />
 
             <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchFunc" :loading="vdata.btnLoading">
@@ -20,7 +19,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -41,7 +40,7 @@
           </template>
 
           <template v-if="column.key === 'state'">
-            <JeepayTableColState
+            <henpay-table-col-state
               :state="record.state"
               :showSwitchType="$access('ENT_UR_USER_EDIT')"
               :onChange="
@@ -54,7 +53,7 @@
 
           <template slot="opSlot" v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_UR_USER_UPD_ROLE')"
@@ -77,10 +76,10 @@
               >
                 删除
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
 
     <!-- 新增 / 修改 页面组件  -->
@@ -88,7 +87,6 @@
 
     <!-- 分配角色 页面组件  -->
     <RoleDist ref="roleDistRef" />
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_SYS_USER_LIST, req, reqLoad } from '@/api/manage'
@@ -97,32 +95,34 @@ import RoleDist from './RoleDist.vue'
 import { reactive, getCurrentInstance, ref } from 'vue'
 
 const tableColumns = [
-  { title: '用户ID', dataIndex: 'sysUserId', fixed: 'left' },
-  { title: '姓名', dataIndex: 'realname' },
+  { title: '用户ID', dataIndex: 'sysUserId', fixed: 'left', width: 200 },
+  { title: '姓名', dataIndex: 'realname', width: 200 },
   {
     title: '性别',
     dataIndex: 'sex',
     customRender: ({ record }) => {
       return record.sex === 1 ? '男' : record.sex === 2 ? '女' : '未知'
     },
+    width: 200
   },
-  { title: '头像', key: 'avatar', scopedSlots: { customRender: 'avatarSlot' } },
-  { title: '编号', dataIndex: 'userNo' },
-  { title: '手机号', dataIndex: 'telphone' },
+  { title: '头像', key: 'avatar', scopedSlots: { customRender: 'avatarSlot' }, width: 200 },
+  { title: '编号', dataIndex: 'userNo', width: 200 },
+  { title: '手机号', dataIndex: 'telphone', width: 200 },
   {
     title: '超管',
     dataIndex: 'isAdmin',
     customRender: ({ record }) => {
       return record.isAdmin === 1 ? '是' : '否'
     },
+    width: 200
   },
-  { title: '状态', key: 'state', scopedSlots: { customRender: 'stateSlot' }, align: 'center' },
-  { title: '创建时间', dataIndex: 'createdAt' },
-  { title: '修改时间', dataIndex: 'updatedAt' },
+  { title: '状态', key: 'state', scopedSlots: { customRender: 'stateSlot' }, align: 'center', width: 200 },
+  { title: '创建时间', dataIndex: 'createdAt', width: 200 },
+  { title: '修改时间', dataIndex: 'updatedAt', width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '200px',
+    width: 200,
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },

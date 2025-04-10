@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
@@ -15,15 +14,15 @@
 <!--              <a-icon slot="suffixIcon" type="sync" />-->
               <sync-outlined slot="suffixIcon" />
             </a-range-picker>
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="支付/退款列订单号"
               v-model:value="vdata.searchData.unionOrderId"
             />
-            <!--            <jeepay-text-up :placeholder="'退款订单号'" :msg="searchData.refundOrderId" v-model:value="searchData.refundOrderId" />-->
-            <!--            <jeepay-text-up :placeholder="'商户退款单号'" :msg="searchData.mchRefundNo" v-model:value="searchData.mchRefundNo" />-->
-            <!--            <jeepay-text-up :placeholder="'支付订单号'" :msg="searchData.payOrderId" v-model:value="searchData.payOrderId" />-->
-            <!--            <jeepay-text-up :placeholder="'渠道订单号'" :msg="searchData.channelPayOrderNo" v-model:value="searchData.channelPayOrderNo" />-->
-            <jeepay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
+            <!--            <henpay-text-up :placeholder="'退款订单号'" :msg="searchData.refundOrderId" v-model:value="searchData.refundOrderId" />-->
+            <!--            <henpay-text-up :placeholder="'商户退款单号'" :msg="searchData.mchRefundNo" v-model:value="searchData.mchRefundNo" />-->
+            <!--            <henpay-text-up :placeholder="'支付订单号'" :msg="searchData.payOrderId" v-model:value="searchData.payOrderId" />-->
+            <!--            <henpay-text-up :placeholder="'渠道订单号'" :msg="searchData.channelPayOrderNo" v-model:value="searchData.channelPayOrderNo" />-->
+            <henpay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
             <a-select
               v-model:value="vdata.searchData.state"
               placeholder="退款状态"
@@ -57,7 +56,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -155,7 +154,7 @@
           </template>
           <template v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_REFUND_ORDER_VIEW')"
@@ -163,10 +162,10 @@
               >
                 详情
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
     <!-- 日志详情抽屉 -->
     <template>
@@ -404,7 +403,6 @@
         </a-form>
       </a-drawer>
     </template>
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_REFUND_ORDER_LIST, req } from '@/api/manage'
@@ -414,30 +412,30 @@ import { reactive, getCurrentInstance, ref } from 'vue'
 const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProperties
 
 const tableColumns = [
-  { key: 'payAmount', title: '支付金额', scopedSlots: { customRender: 'payAmountSlot' } },
-  { key: 'refundAmount', title: '退款金额', scopedSlots: { customRender: 'refundAmountSlot' } },
+  { key: 'payAmount', title: '支付金额', scopedSlots: { customRender: 'payAmountSlot' }, width: 200 },
+  { key: 'refundAmount', title: '退款金额', scopedSlots: { customRender: 'refundAmountSlot' }, width: 200 },
   {
     key: 'refund',
     title: '退款订单号',
     scopedSlots: { customRender: 'refundOrderSlot' },
-    width: '260px',
+    width: 260,
   },
   {
     key: 'pay',
     title: '支付订单号',
     scopedSlots: { customRender: 'payOrderSlot' },
-    width: '260px',
+    width: 260,
   },
   // { key: 'refundOrderId', title: '退款订单号', dataIndex: 'refundOrderId' },
   // { key: 'mchRefundNo', title: '商户退款单号', dataIndex: 'mchRefundNo' },
   // { key: 'payOrderId', title: '支付订单号', dataIndex: 'payOrderId' },
   // { key: 'channelPayOrderNo', title: '渠道订单号', dataIndex: 'channelPayOrderNo' },
-  { key: 'state', title: '支付状态', scopedSlots: { customRender: 'stateSlot' } },
-  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期' },
+  { key: 'state', title: '支付状态', scopedSlots: { customRender: 'stateSlot' }, width: 200 },
+  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期', width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '100px',
+    width: 100,
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },
@@ -452,7 +450,7 @@ const vdata: any = reactive({
   createdEnd: '', // 选择结束时间
   open: false,
   detailData: {},
-  date: '',
+  date: [],
 })
 const infoTable = ref()
 

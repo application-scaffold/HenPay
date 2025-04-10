@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
@@ -16,13 +15,13 @@
                 <sync-outlined slot="suffixIcon" />
               </a-range-picker>
             </a-form-item>
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="支付/商户/渠道订单号"
               v-model:value="vdata.searchData.unionOrderId"
             />
-            <!--            <jeepay-text-up :placeholder="'支付订单号'" :msg="vdata.searchData.payOrderId" v-model:value="vdata.searchData.payOrderId" />-->
-            <!--            <jeepay-text-up :placeholder="'商户订单号'" :msg="vdata.searchData.mchOrderNo" v-model:value="vdata.searchData.mchOrderNo" />-->
-            <jeepay-text-up :placeholder="'应用AppId'" v-model:value="vdata.searchData.appId" />
+            <!--            <henpay-text-up :placeholder="'支付订单号'" :msg="vdata.searchData.payOrderId" v-model:value="vdata.searchData.payOrderId" />-->
+            <!--            <henpay-text-up :placeholder="'商户订单号'" :msg="vdata.searchData.mchOrderNo" v-model:value="vdata.searchData.mchOrderNo" />-->
+            <henpay-text-up :placeholder="'应用AppId'" v-model:value="vdata.searchData.appId" />
 
             <a-select
               class="table-head-layout"
@@ -87,7 +86,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -190,7 +189,7 @@
 
           <template v-if="column.key == 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_PAY_ORDER_VIEW')"
@@ -207,10 +206,10 @@
               >
                 退款
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
     <!-- 退款弹出框 -->
     <refund-modal ref="refundModalInfo" :callbackFunc="searchFunc"></refund-modal>
@@ -513,7 +512,6 @@
         </a-row>
       </a-drawer>
     </template>
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import RefundModal from './RefundModal.vue' // 退款弹出框
@@ -525,29 +523,31 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { key: 'amount', title: '支付金额', scopedSlots: { customRender: 'amountSlot' } },
-  { key: 'refundAmount', title: '退款金额', scopedSlots: { customRender: 'refundAmountSlot' } },
+  { key: 'amount', title: '支付金额', scopedSlots: { customRender: 'amountSlot' }, width: 200 },
+  { key: 'refundAmount', title: '退款金额', scopedSlots: { customRender: 'refundAmountSlot' }, width: 200 },
   {
     key: 'mchFeeAmount',
     dataIndex: 'mchFeeAmount',
     title: '手续费',
+    width: 200
   },
-  { key: 'orderNo', title: '订单号', width: '260px' },
+  { key: 'orderNo', title: '订单号', width: 260 },
   // { key: 'payOrderId', title: '支付订单号', dataIndex: 'payOrderId' },
   // { key: 'mchOrderNo', title: '商户订单号', dataIndex: 'mchOrderNo' },
   { key: 'wayName', title: '支付方式', dataIndex: 'wayName', width: 150 },
-  { key: 'state', title: '支付状态', scopedSlots: { customRender: 'stateSlot' } },
+  { key: 'state', title: '支付状态', scopedSlots: { customRender: 'stateSlot' }, width: 200 },
   {
     key: 'divisionState',
     title: '分账状态',
     scopedSlots: { customRender: 'divisionStateSlot' },
     align: 'center',
+    width: 200
   },
-  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期' },
+  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期', width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '120px',
+    width: 120,
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },
@@ -564,7 +564,7 @@ const vdata: any = reactive({
   detailData: {},
   payWayList: [],
 
-  date: '',
+  date: [],
 })
 
 const infoTable = ref()

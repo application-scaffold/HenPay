@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
@@ -14,17 +13,17 @@
 <!--              <a-icon slot="suffixIcon" type="sync" />-->
               <sync-outlined slot="suffixIcon" />
             </a-range-picker>
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="分账接受者ID"
               v-model:value="vdata.searchData.receiverId"
             />
-            <jeepay-text-up
+            <henpay-text-up
               placeholder="分账账号组ID"
               v-model:value="vdata.searchData.receiverGroupId"
             />
-            <jeepay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
-            <jeepay-text-up placeholder="支付订单号" v-model:value="vdata.searchData.payOrderId" />
-            <jeepay-text-up placeholder="分账接收账号" v-model:value="vdata.searchData.accNo" />
+            <henpay-text-up placeholder="应用AppId" v-model:value="vdata.searchData.appId" />
+            <henpay-text-up placeholder="支付订单号" v-model:value="vdata.searchData.payOrderId" />
+            <henpay-text-up placeholder="分账接收账号" v-model:value="vdata.searchData.accNo" />
 
             <a-select
               v-model:value="vdata.searchData.state"
@@ -51,7 +50,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         @btnLoadClose="vdata.btnLoading = false"
         ref="infoTable"
         :initData="true"
@@ -73,7 +72,7 @@
           </template>
           <template v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_DIVISION_RECORD_VIEW')"
@@ -88,14 +87,13 @@
               >
                 重试
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
 
     <Detail ref="recordDetail" />
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_PAY_ORDER_DIVISION_RECORD_LIST, req, resendDivision } from '@/api/manage'
@@ -107,34 +105,37 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { key: 'calDivisionAmount', title: '分账金额', scopedSlots: { customRender: 'amountSlot' } },
-  { key: 'batchOrderId', title: '分账批次号', dataIndex: 'batchOrderId' },
-  { key: 'payOrderId', title: '支付订单号', dataIndex: 'payOrderId' },
-  { key: 'ifCode', title: '接口代码', dataIndex: 'ifCode' },
+  { key: 'calDivisionAmount', title: '分账金额', scopedSlots: { customRender: 'amountSlot' }, width: 200 },
+  { key: 'batchOrderId', title: '分账批次号', dataIndex: 'batchOrderId', width: 200 },
+  { key: 'payOrderId', title: '支付订单号', dataIndex: 'payOrderId', width: 200 },
+  { key: 'ifCode', title: '接口代码', dataIndex: 'ifCode', width: 200 },
   {
     key: 'payOrderAmount',
     dataIndex: 'payOrderAmount',
     title: '订单金额',
     customRender: ({ text }) => '￥' + (text / 100).toFixed(2),
+    width: 200
   },
   {
     key: 'payOrderDivisionAmount',
     dataIndex: 'payOrderDivisionAmount',
     title: '分账基数',
     customRender: ({ text }) => '￥' + (text / 100).toFixed(2),
+    width: 200
   },
-  { key: 'receiverAlias', title: '账号别名', dataIndex: 'receiverAlias' },
-  { key: 'accNo', title: '接收账号', dataIndex: 'accNo' },
-  { key: 'accName', title: '账号姓名', dataIndex: 'accName' },
-  { key: 'relationTypeName', title: '分账关系类型', dataIndex: 'relationTypeName' },
+  { key: 'receiverAlias', title: '账号别名', dataIndex: 'receiverAlias', width: 200 },
+  { key: 'accNo', title: '接收账号', dataIndex: 'accNo', width: 200 },
+  { key: 'accName', title: '账号姓名', dataIndex: 'accName', width: 200 },
+  { key: 'relationTypeName', title: '分账关系类型', dataIndex: 'relationTypeName', width: 200 },
   {
     key: 'divisionProfit',
     dataIndex: 'divisionProfit',
     title: '分账比例',
     customRender: ({ text }) => (text * 100).toFixed(2) + '%',
+    width: 200
   },
-  { key: 'state', title: '分账状态', scopedSlots: { customRender: 'stateSlot' } },
-  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期' },
+  { key: 'state', title: '分账状态', scopedSlots: { customRender: 'stateSlot' }, width: 200 },
+  { key: 'createdAt', dataIndex: 'createdAt', title: '创建日期', width: 200 },
   {
     key: 'op',
     title: '操作',
@@ -142,6 +143,7 @@ const tableColumns = [
     fixed: 'right',
     align: 'center',
     scopedSlots: { customRender: 'opSlot' },
+    width: 200
   },
 ]
 

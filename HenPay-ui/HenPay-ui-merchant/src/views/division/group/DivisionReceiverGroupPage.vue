@@ -1,14 +1,13 @@
 <template>
-  <page-header-wrapper>
     <a-card>
       <div v-if="$access('ENT_DIVISION_RECEIVER_GROUP_LIST')" class="table-page-search-wrapper">
         <a-form layout="inline" class="table-head-ground">
           <div class="table-layer">
-            <jeepay-text-up
+            <henpay-text-up
               :placeholder="'组ID'"
               v-model:value="vdata.searchData.receiverGroupId"
             />
-            <jeepay-text-up
+            <henpay-text-up
               :placeholder="'组名称'"
               v-model:value="vdata.searchData.receiverGroupName"
             />
@@ -25,7 +24,7 @@
       </div>
 
       <!-- 列表渲染 -->
-      <JeepayTable
+      <henpay-table
         ref="infoTable"
         :initData="true"
         :reqTableDataFunc="reqTableDataFunc"
@@ -48,7 +47,7 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'op'">
             <!-- 操作列插槽 -->
-            <JeepayTableColumns>
+            <henpay-table-columns>
               <a-button
                 type="link"
                 v-if="$access('ENT_DIVISION_RECEIVER_GROUP_EDIT')"
@@ -64,15 +63,14 @@
               >
                 删除
               </a-button>
-            </JeepayTableColumns>
+            </henpay-table-columns>
           </template>
         </template>
-      </JeepayTable>
+      </henpay-table>
     </a-card>
 
     <!-- 新增 / 修改 页面组件  -->
     <InfoAddOrEdit ref="infoAddOrEdit" :callbackFunc="searchFunc" />
-  </page-header-wrapper>
 </template>
 <script setup lang="ts">
 import { API_URL_DIVISION_RECEIVER_GROUP, req } from '@/api/manage'
@@ -83,20 +81,21 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 
 // eslint-disable-next-line no-unused-vars
 const tableColumns = [
-  { key: 'receiverGroupId', dataIndex: 'receiverGroupId', title: '组ID' },
-  { key: 'receiverGroupName', dataIndex: 'receiverGroupName', title: '组名称' },
+  { key: 'receiverGroupId', dataIndex: 'receiverGroupId', title: '组ID', width: 200},
+  { key: 'receiverGroupName', dataIndex: 'receiverGroupName', title: '组名称', width: 200 },
   {
     key: 'autoDivisionFlag',
     dataIndex: 'autoDivisionFlag',
     title: '自动分账组',
     customRender: ({ text }) => (text === 1 ? '是' : '否'),
+    width: 200
   },
-  { key: 'createdBy', dataIndex: 'createdBy', title: '创建人' },
-  { key: 'createdAt', dataIndex: 'createdAt', title: '创建时间' },
+  { key: 'createdBy', dataIndex: 'createdBy', title: '创建人', width: 200 },
+  { key: 'createdAt', dataIndex: 'createdAt', title: '创建时间', width: 200 },
   {
     key: 'op',
     title: '操作',
-    width: '200px',
+    width: 200,
     fixed: 'right',
     align: 'center',
   },

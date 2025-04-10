@@ -304,29 +304,32 @@ const { $infoBox, $access } = getCurrentInstance()!.appContext.config.globalProp
 
 // eslint-disable-next-line no-unused-vars
 const accTableColumns = [
-  { key: 'reqBindState', title: '状态', scopedSlots: { customRender: 'reqBindStateSlot' } },
-  { key: 'receiverAlias', title: '账号别名', scopedSlots: { customRender: 'receiverAliasSlot' } },
-  { key: 'accType', title: '账号类型', scopedSlots: { customRender: 'accTypeSlot' } },
-  { key: 'accNo', width: '300px', title: '接收方账号', scopedSlots: { customRender: 'accNoSlot' } },
+  { key: 'reqBindState', title: '状态', scopedSlots: { customRender: 'reqBindStateSlot' }, width: 200 },
+  { key: 'receiverAlias', title: '账号别名', scopedSlots: { customRender: 'receiverAliasSlot' }, width: 200 },
+  { key: 'accType', title: '账号类型', scopedSlots: { customRender: 'accTypeSlot' }, width: 200 },
+  { key: 'accNo', width: '300px', title: '接收方账号', scopedSlots: { customRender: 'accNoSlot' }, width: 200 },
   {
     key: 'accName',
     width: '180px',
     title: '接收方姓名',
     scopedSlots: { customRender: 'accNameSlot' },
+    width: 200
   },
-  { key: 'relationType', title: '分账关系', scopedSlots: { customRender: 'relationTypeSlot' } },
+  { key: 'relationType', title: '分账关系', scopedSlots: { customRender: 'relationTypeSlot' }, width: 200 },
   {
     key: 'relationTypeName',
     width: '200px',
     title: '关系名称',
     scopedSlots: { customRender: 'relationTypeNameSlot' },
+    width: 200
   },
   {
     key: 'divisionProfit',
     title: '默认分账比例',
     scopedSlots: { customRender: 'divisionProfitSlot' },
+    width: 200
   },
-  { key: 'op', title: '操作', scopedSlots: { customRender: 'opSlot' } },
+  { key: 'op', title: '操作', scopedSlots: { customRender: 'opSlot' }, width: 200 },
 ]
 
 const defaultReceiverTemplate = {

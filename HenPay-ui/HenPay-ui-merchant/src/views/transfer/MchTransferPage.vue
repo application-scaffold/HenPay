@@ -163,8 +163,6 @@
 <script setup lang="tsx">
 import ReconnectingWebSocket from 'reconnectingwebsocket'
 import { API_URL_MCH_APP, req, queryMchTransferIfCode, doTransfer, getWebSocketPrefix } from '@/api/manage' // 接口
-import ChannelUserModal from '@/components/ChannelUser/ChannelUserModal.vue'
-import { use } from 'echarts'
 import { reactive, getCurrentInstance, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -330,7 +328,7 @@ function immediatelyPay() {
 
           $infoBox.modalWarning('转账处理中', <div>请前往转账订单列表查看最终状态</div>)
         }
-        
+
       } else if (apiRes.state === 3) {
         $infoBox.modalError(
           '转账处理失败',
